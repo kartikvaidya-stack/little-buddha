@@ -20,6 +20,26 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Little Buddha — local development
+
+Start the dev server:
+
+```bash
+npm install
+npm run dev
+```
+
+Visit the following pages while developing:
+
+- `/today` — the guided 6-step daily practice
+- `/journal` — read-only listing of your saved private reflections
+- `/library` — view the 365-day curriculum (locked/unlocked view)
+
+Notes:
+- Data and journals are stored in `localStorage` (private to the device).
+- The app uses Asia/Singapore date logic to determine when a day is completed.
+- PWA support is included: `public/manifest.json` and a basic `public/sw.js` service worker.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
