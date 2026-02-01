@@ -26,6 +26,7 @@ export default function TodayPage() {
   const [step, setStep] = useState<Step>(0);
   const [text, setText] = useState("");
   const [buddhaText, setBuddhaText] = useState("");
+  const [reflectionTitle, setReflectionTitle] = useState("");
   const [content, setContent] = useState<DayContent | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -38,7 +39,10 @@ export default function TodayPage() {
 
   useEffect(() => {
     const entry = getJournalEntry(todayDate);
-    if (entry) setText(entry.text);
+    if (entry) {
+      setText(entry.text);
+      setReflectionTitle(entry.title || "");
+    }
   }, [todayDate]);
 
   useEffect(() => {
@@ -60,7 +64,13 @@ export default function TodayPage() {
   }, [day]);
 
   const handleSave = () => {
-    saveJournalEntry({ date: todayDate, day: progress.currentDay, text });
+    saveJournalEntry({
+      date: todayDate,
+      day: progress.currentDay,
+      text,
+      teachingTitle: content?.title,
+      title: reflectionTitle.trim() || undefined,
+    });
     const updated = completeToday();
     setProgress(updated);
     setLocked(true);
@@ -105,7 +115,7 @@ export default function TodayPage() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-[#FFF7ED] via-white to-[#F6F8FF] text-[#2B2B2B]">
-      <div className="mx-auto w-full max-w-md px-5 pb-16 pt-8">
+      <div className="mx-auto flex min-h-screen w-full max-w-md flex-col px-5 pb-6 pt-8">
         <header className="mb-6 text-center">
           <div className="mb-3 flex items-center justify-between">
             <Button href="/" variant="secondary" className="px-3 py-2 text-sm">Back</Button>
@@ -119,7 +129,7 @@ export default function TodayPage() {
         </header>
 
         {locked && (
-          <section className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+          <section className="rounded-[22px] border border-gray-100 bg-white p-6 shadow-sm">
             <h2 className="text-lg font-medium">You’re done for today</h2>
             <p className="mt-2 text-sm text-gray-600">Come back tomorrow for a new teaching.</p>
             <div className="mt-4 flex gap-3">
@@ -130,20 +140,20 @@ export default function TodayPage() {
         )}
 
         {!locked && (
-          <div className="space-y-4">
+          <div className="flex flex-1 flex-col space-y-4">
             {loading ? (
               <div className="text-center text-gray-400 py-10">Loading…</div>
             ) : error ? (
               <div className="text-center text-red-500 py-10">{error}</div>
             ) : content && (
-              <>
+              <div className="flex flex-1 flex-col space-y-4">
                 <div className="flex items-center justify-center">
                   <div className="grid w-full grid-cols-3 rounded-full bg-white p-1 shadow-[0_12px_30px_rgba(193,93,0,0.12)]">
                     <button
                       onClick={() => setStep(0)}
                       aria-pressed={step === 0}
-                      className={`flex items-center justify-center gap-2 rounded-full px-3 py-2 text-sm font-semibold transition ${
-                        step === 0 ? "bg-[#C15D00] text-white" : "text-[#4B5563]"
+                      className={`font-display flex items-center justify-center gap-2 rounded-full px-4 py-3.5 text-lg font-semibold transition ${
+                        step === 0 ? "bg-[#F5A24D] text-white" : "text-[#4B5563]"
                       }`}
                     >
                       <span aria-hidden>📖</span>
@@ -152,8 +162,8 @@ export default function TodayPage() {
                     <button
                       onClick={() => setStep(1)}
                       aria-pressed={step === 1}
-                      className={`flex items-center justify-center gap-2 rounded-full px-3 py-2 text-sm font-semibold transition ${
-                        step === 1 ? "bg-[#C15D00] text-white" : "text-[#4B5563]"
+                      className={`font-display flex items-center justify-center gap-2 rounded-full px-4 py-3.5 text-lg font-semibold transition ${
+                        step === 1 ? "bg-[#F5A24D] text-white" : "text-[#4B5563]"
                       }`}
                     >
                       <span aria-hidden>🪷</span>
@@ -162,8 +172,8 @@ export default function TodayPage() {
                     <button
                       onClick={() => setStep(2)}
                       aria-pressed={step === 2}
-                      className={`flex items-center justify-center gap-2 rounded-full px-3 py-2 text-sm font-semibold transition ${
-                        step === 2 ? "bg-[#C15D00] text-white" : "text-[#4B5563]"
+                      className={`font-display flex items-center justify-center gap-2 rounded-full px-4 py-3.5 text-lg font-semibold transition ${
+                        step === 2 ? "bg-[#F5A24D] text-white" : "text-[#4B5563]"
                       }`}
                     >
                       <span aria-hidden>✍️</span>
@@ -173,24 +183,30 @@ export default function TodayPage() {
                 </div>
 
                 {step === 0 && (
-                  <section className="rounded-3xl border border-[#F3D8B8] bg-white p-6 shadow-[0_20px_60px_rgba(193,93,0,0.10)]">
+                  <section className="flex min-h-[60vh] flex-1 flex-col rounded-[28px] border border-[#F3D8B8] bg-white p-6 shadow-[0_20px_60px_rgba(193,93,0,0.10)]">
                     <div className="text-xs uppercase tracking-[0.2em] text-[#C15D00]">Step 1 · Teaching</div>
-                    <h2 className="mt-2 text-xl font-semibold">{content.title}</h2>
-                    <p className="mt-3 text-sm leading-6 text-[#4A4A4A]">{content.summary}</p>
-                    {content.source && (
-                      <p className="mt-2 text-xs text-[#7A6D62]">Source: {content.source}</p>
-                    )}
-                    <div className="mt-4 rounded-2xl border border-[#F3D8B8] bg-[#FFF3E0] p-4 text-sm text-[#4A4A4A]">
-                      {content.practice}
+                    <h2 className="font-display mt-2 text-3xl font-semibold">{content.title}</h2>
+                    <div className="mt-3 flex flex-1 flex-col">
+                      <div className="rounded-[22px] border border-[#F3D8B8] bg-[#FFF9F1] p-4">
+                        <div className="text-xs uppercase tracking-[0.2em] text-[#C15D00]">Reading</div>
+                        <p className="mt-2 text-sm leading-6 text-[#4A4A4A]">{content.summary}</p>
+                        {content.source && (
+                          <p className="mt-2 text-xs text-[#7A6D62]">Source: {content.source}</p>
+                        )}
+                      </div>
+                      <div className="mt-4 flex-1 rounded-[22px] border border-[#F3D8B8] bg-[#FFF3E0] p-4 text-base text-[#4A4A4A]">
+                        <div className="text-xs uppercase tracking-[0.2em] text-[#C15D00]">Practice</div>
+                        <div className="mt-2">{content.practice}</div>
+                      </div>
                     </div>
                   </section>
                 )}
 
                 {step === 1 && (
-                  <section className="rounded-3xl border border-[#F3D8B8] bg-white p-6 shadow-sm">
+                  <section className="flex min-h-[60vh] flex-1 flex-col rounded-[28px] border border-[#F3D8B8] bg-white p-6 shadow-sm">
                     <div className="text-xs uppercase tracking-[0.2em] text-[#C15D00]">Step 2 · Ask</div>
-                    <h3 className="mt-2 text-lg font-medium">What guidance do you need right now?</h3>
-                    <div className="mt-4 rounded-2xl border border-[#F3D8B8] bg-[#FFF9F1] p-4">
+                    <h3 className="font-display mt-2 text-2xl font-medium">What guidance do you need right now?</h3>
+                    <div className="mt-4 flex flex-1 flex-col rounded-[22px] border border-[#F3D8B8] bg-[#FFF9F1] p-4">
                       <div className="flex items-center justify-between gap-3">
                         <div>
                           <div className="text-xs uppercase tracking-[0.2em] text-[#C15D00]">Your question</div>
@@ -199,7 +215,7 @@ export default function TodayPage() {
                         <span className="text-2xl" aria-hidden>🪷</span>
                       </div>
                       <textarea
-                        className="mt-3 h-36 w-full resize-none rounded-2xl border border-[#F1CDA5] bg-white p-3 text-base leading-6 focus:outline-none focus:ring-2 focus:ring-[#F1CDA5]"
+                        className="mt-3 flex-1 w-full resize-none rounded-[22px] border border-[#F1CDA5] bg-white p-3 text-lg leading-7 focus:outline-none focus:ring-2 focus:ring-[#F1CDA5]"
                         value={buddhaText}
                         onChange={(e) => setBuddhaText(e.target.value)}
                         placeholder="Ask for clarity, courage, or patience…"
@@ -214,7 +230,7 @@ export default function TodayPage() {
                         </Button>
                         {aiError && <div className="mt-2 text-xs text-red-500">{aiError}</div>}
                         {!aiError && (aiSummary || aiQuestions.length > 0) && (
-                          <div className="mt-3 rounded-2xl border border-[#F1CDA5] bg-white p-4 text-base text-[#4A4A4A]">
+                          <div className="mt-3 rounded-[22px] border border-[#F1CDA5] bg-white p-4 text-base text-[#4A4A4A]">
                             {aiSummary && <div className="font-semibold">{aiSummary}</div>}
                             {aiQuestions.length > 0 && (
                               <ul className="mt-3 list-disc pl-5 text-sm text-[#4A4A4A]">
@@ -231,35 +247,43 @@ export default function TodayPage() {
                 )}
 
                 {step === 2 && (
-                  <section className="rounded-3xl border border-[#F3D8B8] bg-white p-6 shadow-sm">
+                  <section className="flex min-h-[60vh] flex-1 flex-col rounded-[28px] border border-[#F3D8B8] bg-white p-6 shadow-sm">
                     <div className="text-xs uppercase tracking-[0.2em] text-[#C15D00]">Step 3 · Reflect</div>
-                    <h3 className="mt-2 text-lg font-medium">{content.prompt}</h3>
-                    <div className="mt-5 rounded-2xl border border-[#F3D8B8] bg-[#FFF9F1] p-4">
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <div className="text-xs uppercase tracking-[0.2em] text-[#C15D00]">Notes</div>
-                          <div className="mt-1 text-sm text-[#7A4B1A]">Write freely and save.</div>
+                    <h3 className="font-display mt-2 text-2xl font-medium">{content.prompt}</h3>
+                    <div className="mt-5 flex flex-1 flex-col">
+                      <div className="flex flex-1 flex-col rounded-[22px] border border-[#F3D8B8] bg-[#FFF9F1] p-4">
+                        <div className="flex items-center justify-between gap-3">
+                          <div>
+                            <div className="text-xs uppercase tracking-[0.2em] text-[#C15D00]">Notes</div>
+                            <div className="mt-1 text-sm text-[#7A4B1A]">Write freely and save.</div>
+                          </div>
+                          <span className="text-2xl" aria-hidden>📝</span>
                         </div>
-                        <span className="text-2xl" aria-hidden>📝</span>
+                        <input
+                          className="mt-4 h-24 w-full rounded-[22px] border border-[#F1CDA5] bg-white px-5 text-2xl font-semibold leading-7 focus:outline-none focus:ring-2 focus:ring-[#F1CDA5]"
+                          value={reflectionTitle}
+                          onChange={(e) => setReflectionTitle(e.target.value)}
+                          placeholder="Title your reflection"
+                        />
+                        <textarea
+                          className="mt-3 flex-1 w-full resize-none rounded-[22px] border border-[#F1CDA5] bg-white p-4 text-lg leading-7 focus:outline-none focus:ring-2 focus:ring-[#F1CDA5]"
+                          value={text}
+                          onChange={(e) => setText(e.target.value)}
+                          placeholder="Write your reflection…"
+                        />
                       </div>
-                      <textarea
-                        className="mt-3 h-64 w-full resize-none rounded-2xl border border-[#F1CDA5] bg-white p-3 text-base leading-6 focus:outline-none focus:ring-2 focus:ring-[#F1CDA5]"
-                        value={text}
-                        onChange={(e) => setText(e.target.value)}
-                        placeholder="Write your reflection…"
-                      />
-                    </div>
-                    <div className="mt-4 grid grid-cols-1 gap-2">
-                      <Button onClick={handleSave} className="px-4 py-3 text-base">Save</Button>
-                      <Button href="/journal" variant="secondary" className="px-4 py-3 text-base">Journal</Button>
+                      <div className="mt-4 grid grid-cols-1 gap-2">
+                        <Button onClick={handleSave} className="min-h-[44px] px-4 py-2 text-sm">Save</Button>
+                        <Button href="/journal" variant="secondary" className="min-h-[44px] px-4 py-2 text-sm">Journal</Button>
+                      </div>
                     </div>
                   </section>
                 )}
-              </>
+              </div>
             )}
 
             {!loading && !error && (
-              <nav className="flex items-center justify-between">
+              <nav className="mt-auto flex items-center justify-between">
                 {step > 0 ? (
                   <Button onClick={goPrev} variant="secondary" className="px-4 py-2 text-base">Back</Button>
                 ) : (

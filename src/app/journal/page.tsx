@@ -19,8 +19,8 @@ export default function JournalPage() {
       <div className="max-w-xl mx-auto">
         <div className="mb-4 flex items-center justify-between">
           <div className="w-16" />
-          <h1 className="text-2xl font-semibold text-center flex-1">Journal</h1>
-          <Button href="/" variant="secondary" className="px-4 py-2 text-sm">Back</Button>
+          <h1 className="font-display text-3xl font-semibold text-center flex-1">Journal</h1>
+          <Button href="/" variant="secondary" className="px-4 py-2 text-base">Back</Button>
         </div>
         {entries.length === 0 ? (
           <p className="text-gray-600">No entries yet. Your reflections appear here after you complete a day.</p>
@@ -29,25 +29,26 @@ export default function JournalPage() {
             {entries.map((e) => (
               <li
                 key={e.date}
-                className={`rounded-2xl p-4 bg-gradient-to-br ${cardStyles[e.day % cardStyles.length]} shadow-sm`}
+                className={`rounded-[22px] p-4 bg-gradient-to-br ${cardStyles[e.day % cardStyles.length]} shadow-sm`}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <div className="text-sm text-gray-700 font-semibold">Day {e.day}</div>
-                    <div className="text-xs text-gray-600">{e.date}</div>
-                    <div className="mt-2 text-gray-800">{e.text.slice(0, 120)}{e.text.length > 120 ? '…' : ''}</div>
+                    <div className="text-base text-gray-800 font-semibold">{e.title || e.teachingTitle || `Day ${e.day}`}</div>
+                    <div className="text-sm text-gray-600">Day {e.day} · {e.date}</div>
                   </div>
                   <div>
                     <button
                       onClick={() => setSelected(selected === e.date ? null : e.date)}
-                      className="text-xs px-3 py-1 rounded-full bg-white text-[#1F3B80] border border-[#DDE7FF]"
+                      className="text-lg px-6 py-4 rounded-full bg-white text-[#1F3B80] border border-[#DDE7FF]"
                     >
                       {selected === e.date ? "Close" : "View"}
                     </button>
                   </div>
                 </div>
                 {selected === e.date && (
-                  <div className="mt-3 text-sm text-gray-700 whitespace-pre-wrap">{e.text}</div>
+                  <div className="mt-3 text-base text-gray-700 whitespace-pre-wrap">
+                    <div className="mt-1">{e.text}</div>
+                  </div>
                 )}
               </li>
             ))}

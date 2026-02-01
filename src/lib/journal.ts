@@ -5,6 +5,8 @@ export type JournalEntry = {
   date: string; // YYYY-MM-DD (SG)
   day: number; // day number 1-365
   text: string;
+  teachingTitle?: string;
+  title?: string;
 };
 
 const JOURNAL_KEY = "little-buddha-journals";
